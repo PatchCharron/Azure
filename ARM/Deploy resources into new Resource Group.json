@@ -1,0 +1,45 @@
+/*
+    Been doing a lot more full deployments lately, meaning creating the Resource Group then putting resources into it. 
+
+    Make sure to use New-AzDeployment cmdlet to deploy this.
+*/
+{
+    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+    "contentVersion": "1.0.0.0",
+    "resources": [
+        {
+            "type": "Microsoft.Resources/resourceGroups",
+            "apiVersion": "2018-05-01",
+            "location": "eastus",
+            "name": "RG1"
+        },
+        {
+            "type": "Microsoft.Resources/deployments",
+            "apiVersion": "2017-05-10",
+            "name": "storageDeployment",
+            "resourceGroup": "RG1",
+            "dependsOn": [
+                "[resourceId('Microsoft.Resources/resourceGroups/', 'RG1')]"
+            ],
+            "properties": {
+                "mode": "Incremental",
+                "template": {
+                    "$schema": "https://schema.management.azure.com/schemas/2015-01-01/deploymentTemplate.json#",
+                    "contentVersion": "1.0.0.0",
+                    "resources": [
+                        {
+                            "type": "Microsoft.Storage/storageAccounts",
+                            "apiVersion": "2017-10-01",
+                            "name": "storage1",
+                            "location": "eastus",
+                            "kind": "StorageV2",
+                            "sku": {
+                                "name": "Standard_LRS"
+                            }
+                        }
+                    ]
+                }
+            }
+        }
+    ]
+}

@@ -1,0 +1,13 @@
+$DriveLetters = 'GHIJKLMNOPQSRTUVWXYZ'
+
+foreach($disk in (Get-Disk | Where-Object PartitionStyle -eq "RAW"))
+{
+    Disk ("disk" + $disk.Number)
+    {
+        DriveLetter = $DriveLetters[$disk.number]
+        FSLabel = ("Disk" + $disk.number)
+        DiskId = $disk.UniqueId
+        FSFormat = "NTFS"
+        DiskIdType = "UniqueId"
+    }
+}
