@@ -50,4 +50,18 @@ The parent certificate is built into the container and when the container runs i
 
 This means to get the credentials the attacker would have to have the container image and the encrypted CMS with the second key. They would need to be on the container host with knowledge of the decryption path to gain access to the credentials.
 
+To make and export a parent certificate use this code as a reference:
+```
+$ParentCertificate = "Contoso"
+$c = New-SelfSignedCertificate -DnsName $ParentCertificate -CertStoreLocation "Cert:\CurrentUser\My" -KeyUsage KeyEncipherment,DataEncipherment, KeyAgreement -Type DocumentEncryptionCert -KeyLength 4096
+
+$password = ConvertTo-SecureString -String $passwordWolf -Force -AsPlainText
+Export-PfxCertificate -Cert $c -FilePath ($outputDirectory + $ParentCertificate + ".pfx") -Password $password
+
+Set-Location "C:\Program Files\OpenSSL-Win64\bin\"
+
+.\openssl.exe rsa -in ($outputDirectory + $ParentCertificate + ".pfx") -passin ("pass:" + $passwordWolf) -out ($outputDirectory + $ParentCertificate + ".key")
+.\openssl.exe rsa -in ($outputDirectory + $ParentCertificate + ".pfx") -passin ("pass:" + $passwordWolf) -pubout -out ($outputDirectory + $ParentCertificate + ".pub")
+```
+
 Is anything truly secure, no. But this has enough levels that I feel safe releasing this method as sufficient.
